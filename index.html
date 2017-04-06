@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<meta charset='utf-8'>
+<title>Auto-emailer</title>
+<style>
+    html, body{
+        padding:0;
+        margin: 0;
+    }
+    body {
+    }
+    #wrapper {
+        margin: 0 auto;
+        max-width: 600px;
+        border: 5px solid orange;
+    }
+    label {
+        display: block;
+    }
+    input {
+        display: block;
+        border: 2px solid grey;
+        width: 300px;
+        height: 50px;
+    }
+</style>
+<body>
+<div id='wrapper'>
+<h1>Auto-emailer</h1>
+<p> 請確保所有的附件都在 ./attachments/ 文件夾里。 </p>
+    <label for='email'>Email address</label>
+    <input id ='email' type='email' placeholder='research@iglobepartners.com'></input>
+    <label for='password'>Password</label>
+    <input id ='password' type='password' placeholder='Password'></input>
+    <label for='csv'>.csv filename</label>
+    <input id ='csv' type='text' placeholder='data' value='data'></input>
+    <label for='body'>.txt Text file filename</label>
+    <input id ='body' type='text' placeholder='email' value='email'></input>
+    <input type='button' value='Send emails' onclick='send()' ></input>
+</div>
+</body>
+
+<script type='text/javascript'>
+    function send() {
+        var email = document.getElementById('email').value;
+        var password = document.getElementById('password').value;
+        var csv = document.getElementById('csv').value;
+        var body = document.getElementById('body').value;
+        console.log(email, password, csv, body);
+        var xhr = newXMLHttpRequest();
+        //xhr.open('POST', 'http://192.168.1.13:5000');
+    }
+</script>
