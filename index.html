@@ -12,6 +12,8 @@
         margin: 0 auto;
         max-width: 600px;
         border: 5px solid orange;
+        height: 100vh;
+        text-align: center;
     }
     label {
         display: block;
@@ -21,21 +23,25 @@
         border: 2px solid grey;
         width: 300px;
         height: 50px;
+        margin: 5px auto;
     }
 </style>
 <body>
 <div id='wrapper'>
-<h1>Auto-emailer</h1>
-<p> 請確保所有的附件都在 ./attachments/ 文件夾里。 </p>
-    <label for='email'>Email address</label>
-    <input id ='email' type='email' placeholder='research@iglobepartners.com'></input>
-    <label for='password'>Password</label>
-    <input id ='password' type='password' placeholder='Password'></input>
-    <label for='csv'>.csv filename</label>
-    <input id ='csv' type='text' placeholder='data' value='data'></input>
-    <label for='body'>.txt Text file filename</label>
-    <input id ='body' type='text' placeholder='email' value='email'></input>
-    <input type='button' value='Send emails' onclick='send()' ></input>
+    <h1>iGlobe 自動電郵系統</h1>
+    <p> 請確保所有的附件都在 ./attachments/ 文件夾里。</p>
+        <label for='email'>Email address</label>
+        <input id ='email' type='email' placeholder='research@iglobepartners.com' required></input>
+        <label for='password'>Password</label>
+        <input id ='password' type='password' placeholder='Password' required></input>
+        <label for='csv'>.csv filename</label>
+        <input id ='csv' type='text' placeholder='data' value='data'></input>
+        <label for='body'>.txt Text file filename</label>
+        <input id ='body' type='text' placeholder='email' value='email'></input>
+        Preview each email before sending:<input id='preview' checked type='checkbox'></input>
+        <button value='Send emails' onclick='send()'>Send</button>
+
+    <div id='info'></div>
 </div>
 </body>
 
@@ -45,8 +51,20 @@
         var password = document.getElementById('password').value;
         var csv = document.getElementById('csv').value;
         var body = document.getElementById('body').value;
-        console.log(email, password, csv, body);
-        var xhr = newXMLHttpRequest();
-        //xhr.open('POST', 'http://192.168.1.13:5000');
+        var preview = document.getElementById('preview').checked;
+        console.log(email, password, csv, body, preview);
+        str = `/send?email=${email}&pw=${password}&data=${csv}&body=${body}&preview=${preview}`;
+        console.log(str);
+        var xhr = new XMLHttpRequest();
+        xhr.open('GET', 'http://127.0.0.1:5000' + str);
+        xhr.onload = (e) => {
+            if (xhr.readyState === 4) {
+                document.getElementById('info').innerHTML = xhr.responseText;
+            }
+        }
+        if (email !== '' && password !== '') {
+            console.log('sending');
+            xhr.send();
+        }
     }
 </script>
