@@ -7,6 +7,7 @@ import sys
 
 
 SESSION = ''
+EMAIL = ''  # purely for generate function
 
 
 def connect(email, password):
@@ -24,7 +25,7 @@ def generate(mail):
     msg = EmailMessage()
     msg.set_content(mail['body'])
     msg['Subject'] = mail['subject']
-    msg['From'] = 'research@iglobepartners.com'
+    msg['From'] = EMAIL 
     msg['To'] = ", ".join(x for x in mail['to'])
     msg['CC'] = ", ".join(x for x in mail['cc'])
 
@@ -55,8 +56,9 @@ def send(msgs):
 
 
 def main(email, password, data, text, preview=True, i=None):
-    global SESSION
+    global SESSION, EMAIL
     SESSION = smtplib.SMTP('smtp.office365.com', 587)
+    EMAIL = email
     connected = connect(email, password)
     # connected = True
     if (connected is not True):

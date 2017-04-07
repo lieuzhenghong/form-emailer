@@ -53,7 +53,7 @@ def parse(csv_filename, email_filename):
     t = open(email_filename, 'r')
     # The first line of email.txt should always start with "SUBJECT:<subject>“
     first = t.readline().strip()
-    if (first.startswith('SUBJECT:') or first.startswith('subject:')):
+    if first.startswith('SUBJECT:'):
         pass
     else:
         raise Exception("<b>EMAIL.TXT ERROR:</b>" + 

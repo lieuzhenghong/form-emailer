@@ -1,6 +1,6 @@
-from flask import Flask, request 
+from flask import Flask, request, jsonify
 from flask_cors import CORS, cross_origin
-import email_send
+import sendr 
 
 app = Flask(__name__)
 CORS(app)
@@ -15,13 +15,23 @@ def run():
 @app.route("/send")
 def send():
     params = request.args
-    print(params)
     email = params.get('email')
     pw = params.get('pw')
     data = params.get('data')+'.csv'
     body = params.get('body')+'.txt'
     preview = True if params.get('preview') == 'true' else False 
-    return(str(email_send.main(email, pw , data, body, 0, preview=preview)[0]))
+    data = sendr.main(email, pw , data, body, preview=preview)
+    payload = []
+    for msg in data:
+        print(msg)
+        output = {}
+        output['subject'] = msg[0][1][1]
+        output['from'] = msg[0][2][1]
+        output['to'] = msg[0][3][1]
+        output['cc'] = msg[0][4][1]
+        output['body'] = msg[1]
+        payload.append(output)
+    return(jsonify(payload))
 
 if __name__ == "__main__":
     app.run()

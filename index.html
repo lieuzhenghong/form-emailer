@@ -12,7 +12,6 @@
         margin: 0 auto;
         max-width: 600px;
         border: 5px solid orange;
-        height: 100vh;
         text-align: center;
     }
     label {
@@ -24,6 +23,9 @@
         width: 300px;
         height: 50px;
         margin: 5px auto;
+    }
+    #info {
+        text-align: left;
     }
 </style>
 <body>
@@ -41,7 +43,9 @@
         Preview each email before sending:<input id='preview' checked type='checkbox'></input>
         <button value='Send emails' onclick='send()'>Send</button>
 
-    <div id='info'></div>
+    <div id='info'>
+        <h2>Email preview</h2>
+    </div>
 </div>
 </body>
 
@@ -52,14 +56,29 @@
         var csv = document.getElementById('csv').value;
         var body = document.getElementById('body').value;
         var preview = document.getElementById('preview').checked;
-        console.log(email, password, csv, body, preview);
         str = `/send?email=${email}&pw=${password}&data=${csv}&body=${body}&preview=${preview}`;
-        console.log(str);
         var xhr = new XMLHttpRequest();
         xhr.open('GET', 'http://127.0.0.1:5000' + str);
         xhr.onload = (e) => {
             if (xhr.readyState === 4) {
-                document.getElementById('info').innerHTML = xhr.responseText;
+                try {
+                    j = JSON.parse(xhr.responseText);
+                } catch (e) {
+                    document.getElementById('info').innerHTML = 'Try again: there was an error.';
+                }
+                console.log(j);
+                e = '<h2>Email preview</h2>';
+                for (let item of j) {
+                    e += `<hr>`;
+                    e += `<h3>${item.subject}</h3>`;
+                    e += `<ul>`;
+                    e += `<li>from: ${item.from}`;
+                    e += `<li>to: ${item.to}`;
+                    e += `<li>cc: ${item.cc}`;
+                    e += `</ul>`;
+                    e += `<p>${item.body}`;
+                }
+                document.getElementById('info').innerHTML = e;
             }
         }
         if (email !== '' && password !== '') {
