@@ -64,7 +64,7 @@
                 try {
                     j = JSON.parse(xhr.responseText);
                 } catch (e) {
-                    document.getElementById('info').innerHTML = 'Try again: there was an error.';
+                    document.getElementById('info').innerHTML = xhr.responseText;
                 }
                 console.log(j);
                 e = '<h2>Email preview</h2>';
