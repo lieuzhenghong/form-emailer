@@ -28,7 +28,7 @@ def replace(row, text):
         try:
             rep = str(row[headers.index(match)])
         except ValueError as error:
-            return('<b>VALUE ERROR: ' + str(error) + '</b><p>This'
+            raise Exception('<b>VALUE ERROR: ' + str(error) + '</b><p>This'
                    ' means that your text has `' + match +
                    '` which does not '
                    'exist in your csv file.'
@@ -43,41 +43,24 @@ def parse(csv_filename, email_filename):
     data = []
     first = ''
     body = ''
-    try:
-        with open(csv_filename) as csvfile:
-            reader = csv.reader(csvfile)
-            for idx, row in enumerate(reader):
-                if idx == 0:
-                    headers = row
-                else:
-                    data.append(row)
-    except PermissionError as error:
-        print('<b> PERMISSION ERROR: ' + str(error) + '</b><p>You have a'
-            ' csv file open and so the program cannot run. Make sure to'
-            ' close all'
-            'csv files before running the program.')
-    except FileNotFoundError as error:
-        print('<b>FILE NOT FOUND ERROR</b>:'
-            'File {} not found.'.format(csv_filename))
-
-    try:
-        t = open(email_filename, 'r')
-        # The first line of email.txt should always start with "SUBJECT:<subject>“
-        first = t.readline().strip()
-        if (first.startswith('SUBJECT:')):
-            pass
-        else:
-            raise Exception("<b>EMAIL.TXT ERROR:</b> You didn't start email.txt with 'SUBJECT:'")
-        body = t.read()
-        t.close()
-    except PermissionError as error:
-        print('<b> PERMISSION ERROR: ' + str(error) + '</b><p>You have a'
-            'email.txt file open and so the program cannot run. Make sure to'
-            ' close all'
-            'txt files before running the program.')
-    except FileNotFoundError as error:
-        print('<b>FILE NOT FOUND ERROR</b>:'
-            'File {} not found.'.format(email_filename))
+    with open(csv_filename) as csvfile:
+        reader = csv.reader(csvfile)
+        for idx, row in enumerate(reader):
+            if idx == 0:
+                headers = row
+            else:
+                data.append(row)
+    t = open(email_filename, 'r')
+    # The first line of email.txt should always start with "SUBJECT:<subject>“
+    first = t.readline().strip()
+    if (first.startswith('SUBJECT:') or first.startswith('subject:')):
+        pass
+    else:
+        raise Exception("<b>EMAIL.TXT ERROR:</b>" + 
+                        "You didn't start email.txt with 'SUBJECT:'." + 
+                        "Don't forget the colon! (:)")
+    body = t.read()
+    t.close()
 
     for row in data:
         payload = {}
@@ -94,4 +77,4 @@ def parse(csv_filename, email_filename):
 
 if __name__ == "__main__":
     import sys
-    (parse(sys.argv[1], sys.argv[2]))
+    print(parse(sys.argv[1], sys.argv[2]))
