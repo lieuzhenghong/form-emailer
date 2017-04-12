@@ -15,12 +15,14 @@ def run():
 @app.route("/send")
 def send():
     params = request.args
+    print(params)
+    path = params.get('path')
     email = params.get('email')
     pw = params.get('pw')
     data = params.get('data')+'.csv'
     body = params.get('body')+'.txt'
     preview = True if params.get('preview') == 'true' else False 
-    data = sendr.main(email, pw , data, body, preview=preview)
+    data = sendr.main(path, email, pw , data, body, preview=preview)
     
     payload = []
     if (type(data) == list):

@@ -3,11 +3,13 @@ from email.message import EmailMessage
 import mimetypes
 import parser
 import argparse
+from argparse import RawDescriptionHelpFormatter
 import sys
 
 
 SESSION = ''
 EMAIL = ''  # purely for generate function
+PATH = ''
 
 
 def connect(email, password):
@@ -17,7 +19,7 @@ def connect(email, password):
     try:
         SESSION.login(email, password)
     except smtplib.SMTPAuthenticationError as error:
-        return("<b>AUTH ERROR:</b> Wrong email and/or password.")
+        raise Exception("<b>AUTH ERROR:</b> Wrong email and/or password.")
     return(True)
 
 
@@ -25,13 +27,13 @@ def generate(mail):
     msg = EmailMessage()
     msg.set_content(mail['body'])
     msg['Subject'] = mail['subject']
-    msg['From'] = EMAIL 
+    msg['From'] = EMAIL
     msg['To'] = ", ".join(x for x in mail['to'])
     msg['CC'] = ", ".join(x for x in mail['cc'])
 
     files = mail['attachments']
     for filename in files:
-        path = './attachments/{}'.format(filename)
+        path ='{}attachments/{}'.format(PATH, filename)
 
         ctype, encoding = mimetypes.guess_type(path)
         if ctype is None or encoding is not None:
@@ -41,9 +43,9 @@ def generate(mail):
         maintype, subtype = ctype.split('/', 1)
         with open(path, 'rb') as fp:
             msg.add_attachment(fp.read(),
-                            maintype=maintype,
-                            subtype=subtype,
-                            filename=filename)
+                               maintype=maintype,
+                               subtype=subtype,
+                               filename=filename)
     return(msg)
 
 
@@ -55,20 +57,23 @@ def send(msgs):
         SESSION.send_message(msgs)
 
 
-def main(email, password, data, text, preview=True, i=None):
-    global SESSION, EMAIL
+def main(path, email, password, data, text,
+         preview=True, redirect=None, i=None, ie=None):
+    global SESSION, EMAIL, PATH
     SESSION = smtplib.SMTP('smtp.office365.com', 587)
     EMAIL = email
+    PATH = (path if (path[-1] == '/' ) else (path + '/')) 
     connected = connect(email, password)
     # connected = True
     if (connected is not True):
         return(connected)
+        raise Exception(str(connected))
         SESSION.quit()
     else:
         try:
-            mails = parser.parse(data, text)
+            mails = parser.parse(PATH, data, text, redirect)
         except Exception as error:
-            return(str(error))
+            raise Exception(str(error))
         msgs = []
         logs = []
         if (i is None):
@@ -77,43 +82,109 @@ def main(email, password, data, text, preview=True, i=None):
                     msg = generate(mail)
                 except FileNotFoundError as error:
                     SESSION.quit()
-                    return(str(error))
+                    raise Exception(str(error))
                 logs.append([msg.items(), str(msg.get_body())])
                 msgs.append(msg)
             if (preview in [True, "True"]):  # handle string passed via CLI
                 SESSION.quit()
-                return(logs)
+                print(logs)
             else:
                 send(msgs)
                 SESSION.quit()
-                return('messages sent')
-        else:
+        elif (ie is None):  # We are dealing with a range
             try:
-                msg = generate(mails[i])
+                msg = generate(mail[i])
             except FileNotFoundError as error:
                 SESSION.quit()
-                return(str(error))
+                raise Exception(str(error))
+                logs.append([msg.items(), str(msg.get_body())])
+                msgs.append(msg)
             if (preview in [True, "True"]):  # handle string passed via CLI
                 SESSION.quit()
-                return([msg.items(), str(msg.get_body())])
+                print(logs)
             else:
-                send(msg)
+                send(msgs)
                 SESSION.quit()
-                return('message sent')
+        else:
+            for mail in mails[i:ie+1]:
+                try:
+                    msg = generate(mail)
+                except FileNotFoundError as error:
+                    SESSION.quit()
+                    raise Exception(str(error))
+                if (preview in [True, "True"]):  # handle string passed via CLI
+                    SESSION.quit()
+                    print([msg.items(), str(msg.get_body())])
+                    return 0
+                else:
+                    send(msg)
+                    SESSION.quit()
 
 if __name__ == "__main__":
-    argparser = argparse.ArgumentParser(description='Send form emails. \n'
-                                        'Supports attachments.')
+    argparser = argparse.ArgumentParser(description='''
+Send form emails. \n\
+Supports attachments.\n\
+
+This program requires a data.csv and a email.txt file, as well as a
+folder entitled 'attachments' (even if no attachments are needed).
+This program reads a data.csv file row
+by row, where each row denotes an email to send out.
+The data.csv should contain the following mandatory columns. All these
+columns can take multiple comma-separated values (for example,
+'attachment1.png, attach2.pdf').
+The mandatory columns are:
+
+| `email` (the To: field)
+| `email_cc`
+| `attachment_name`
+
+The CSV may contain optional columns used for the purpose of doing
+search-and-replace operations on the email text. 
+
+Read README.md for more information.
+''',
+    formatter_class=RawDescriptionHelpFormatter
+                                        )
+    argparser.add_argument('path', help='The main folder. Make sure there\
+                           exists a data.csv, email.txt and attachments/\
+                           folder.')
     argparser.add_argument('email', help='Login email')
     argparser.add_argument('password', help='Login password')
-    argparser.add_argument('data', help='Your data .csv file')
-    argparser.add_argument('text', help='Your email body .txt file.')
+    argparser.add_argument('data',
+                           nargs='?',
+                           help='Your data file (.csv)',
+                           default='data.csv')
+    argparser.add_argument('text',
+                           nargs='?',
+                           help='Your email body file (.txt)',
+                           default='email.txt')
     argparser.add_argument('-np', '--no-preview',
-                           help='Send emails straight away (dangerous)',
+                           help='Actually send the emails (dangerous!!!). By\
+                           default (--no-preview=false), this will not send\
+                           anything, just print out the emails to the\
+                           terminal.',
                            action='store_true')
-    argparser.add_argument('-i', '--idx',
-                           help='Which data row to reference (zero-indexed)',
+    argparser.add_argument('-re', '--redirect',
+                           nargs='?',
+                           help='--redirect takes an email address. All emails\
+                           will be sent to the email address given. This is\
+                           useful for testing.',
+                           default=None
+                           )
+    argparser.add_argument('-is', '--idx-start',
+                           nargs='?',
+                           help='If --idx-end is not specified, gets only the\
+                           --idx-start\'s entry from the data file. If\
+                           --idx-end is specified, gets the --idx-start to\
+                           --idx-end entries.',
+                           default=None,
+                           type=int)
+    argparser.add_argument('-ie', '--idx-end',
+                           nargs='?',
+                           help='This should not be specified if --idx-start is\
+                           not specified. See --idx-start.',
+                           default=None,
                            type=int)
     args = argparser.parse_args()
-    print(main(args.email, args.password, args.data,
-               args.text, not(args.no_preview), args.idx))
+    (main(args.path, args.email, args.password, args.data,
+          args.text, not(args.no_preview), args.redirect, args.idx-start, args.idx-end))

@@ -37,20 +37,20 @@ def replace(row, text):
         final = final.replace(n, rep)
     return(final)
 
-def parse(csv_filename, email_filename):
+def parse(path, csv_filename, email_filename, redirect=None):
     global headers
     out = []
     data = []
     first = ''
     body = ''
-    with open(csv_filename) as csvfile:
+    with open(path+csv_filename) as csvfile:
         reader = csv.reader(csvfile)
         for idx, row in enumerate(reader):
             if idx == 0:
                 headers = row
             else:
                 data.append(row)
-    t = open(email_filename, 'r')
+    t = open(path+email_filename, 'r')
     # The first line of email.txt should always start with "SUBJECT:<subject>“
     first = t.readline().strip()
     if first.startswith('SUBJECT:'):
@@ -64,14 +64,19 @@ def parse(csv_filename, email_filename):
 
     for row in data:
         payload = {}
-        payload['to'] = [x.strip() for x in
-                        row[headers.index('email')].split(',')]
-        payload['cc'] = [x.strip() for x in
-                        row[headers.index('email_cc')].split(',')]
         payload['subject'] = first.replace('SUBJECT:', '').strip()
         payload['body'] = replace(row, body)
         payload['attachments'] = [x.strip() for x in
                                 row[headers.index('attachment_name')].split(',')]
+        if (redirect is None):
+            payload['to'] = [x.strip() for x in row[headers.index('email')].split(',')]
+            payload['cc'] = [x.strip() for x in row[headers.index('email_cc')].split(',')]
+        else:
+            to = str([x.strip() for x in row[headers.index('email')].split(',')])
+            cc = str([x.strip() for x in row[headers.index('email_cc')].split(',')])
+            payload['body'] = "=== ORIGINAL RECIPIENTS: WON'T SHOW IN ACTUAL EMAIL ===\nTo: {}\nCC: {}\n===========================================\n".format(to, cc) + replace(row,body) 
+            payload['to'] = [redirect]
+            payload['cc'] = []
         out.append(payload) 
     return(out)
 
