@@ -9,8 +9,7 @@ The following columns are required:
 * email_cc
 * attachment_name (supports multiple attachments, separated by commas)
 
-'''
-usage: sendr.py [-h] [-np] [-re [REDIRECT]] [-i [IDX [IDX ...]]]
+'''usage: sendr.py [-h] [-np] [-re [REDIRECT]] [-i [IDX [IDX ...]]]
                 path email password [data] [text]
 
 Send form emails. Supports attachments.
@@ -29,5 +28,4 @@ optional arguments:
                         Redirect to the email
   -i [IDX [IDX ...]], --idx [IDX [IDX ...]]
                         Which data row to reference (zero-indexed). Can take a
-                        range
-'''
+                        range'''
