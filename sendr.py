@@ -12,6 +12,8 @@ EMAIL = ''  # purely for generate function
 PATH = ''
 
 
+# Connects to the office365 SMTP server 
+# 
 def connect(email, password):
     global SESSION
     SESSION.ehlo()
@@ -23,8 +25,12 @@ def connect(email, password):
     return(True)
 
 
+# Generates a mail message and adds an attachment to it
+# It takes in a mail object which is an object created by
+# parser.py, parser.parse
 def generate(mail):
     msg = EmailMessage()
+    # Grab all the data from the mail object
     msg.set_content(mail['body'])
     msg['Subject'] = mail['subject']
     msg['From'] = EMAIL
@@ -35,6 +41,7 @@ def generate(mail):
     for filename in files:
         path ='{}attachments/{}'.format(PATH, filename)
 
+        # "Magic method" that is able to guess the attachment's filetype
         ctype, encoding = mimetypes.guess_type(path)
         if ctype is None or encoding is not None:
             # No guess could be made, or the file is encoded (compressed), so
@@ -57,25 +64,30 @@ def send(msgs):
         SESSION.send_message(msgs)
 
 
+# The main function responsible for doing everything
+# Set
 def main(path, email, password, data, text,
          preview=True, redirect=None, i=None, ie=None):
     global SESSION, EMAIL, PATH
     SESSION = smtplib.SMTP('smtp.office365.com', 587)
     EMAIL = email
     PATH = (path if (path[-1] == '/' ) else (path + '/')) 
+    #
     connected = connect(email, password)
-    # connected = True
     if (connected is not True):
         return(connected)
         raise Exception(str(connected))
         SESSION.quit()
     else:
+        # Try parsing the mails, if it fails it means there was some problem
+        # with the input data
         try:
             mails = parser.parse(PATH, data, text, redirect)
         except Exception as error:
             raise Exception(str(error))
         msgs = []
         logs = []
+        # If no start index is specified, we send all the emails
         if (i is None):
             for mail in mails:
                 try:
@@ -85,15 +97,18 @@ def main(path, email, password, data, text,
                     raise Exception(str(error))
                 logs.append([msg.items(), str(msg.get_body())])
                 msgs.append(msg)
-            if (preview in [True, "True"]):  # handle string passed via CLI
+            # if preview flag is True (default), don't send, just print
+            if (preview in [True, "True"]):  # handle "True" passed in via CLI
                 SESSION.quit()
                 print(logs)
             else:
                 send(msgs)
                 SESSION.quit()
-        elif (ie is None):  # We are dealing with a range
-            try:
-                msg = generate(mail[i])
+        elif (ie is None): 
+        # Here, i is not None, ie is None, so we send the i'th mail 
+        # Changed it to be one-indexed
+        try:
+                msg = generate(mail[i-1])
             except FileNotFoundError as error:
                 SESSION.quit()
                 raise Exception(str(error))
@@ -105,8 +120,10 @@ def main(path, email, password, data, text,
             else:
                 send(msgs)
                 SESSION.quit()
+        # sends mail from i to ie, inclusively
+        # so i = 1 i = 3 will get you the 1st to 3rd emails
         else:
-            for mail in mails[i:ie+1]:
+            for mail in mails[i-1:ie]:
                 try:
                     msg = generate(mail)
                 except FileNotFoundError as error:

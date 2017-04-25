@@ -69,12 +69,19 @@ def parse(path, csv_filename, email_filename, redirect=None):
         payload['attachments'] = [x.strip() for x in
                                 row[headers.index('attachment_name')].split(',')]
         if (redirect is None):
-            payload['to'] = [x.strip() for x in row[headers.index('email')].split(',')]
-            payload['cc'] = [x.strip() for x in row[headers.index('email_cc')].split(',')]
+            payload['to'] = [x.strip() for x in
+                            row[headers.index('email')].split(',')]
+            payload['cc'] = [x.strip() for x in 
+                            row[headers.index('email_cc')].split(',')]
         else:
-            to = str([x.strip() for x in row[headers.index('email')].split(',')])
-            cc = str([x.strip() for x in row[headers.index('email_cc')].split(',')])
-            payload['body'] = "=== ORIGINAL RECIPIENTS: WON'T SHOW IN ACTUAL EMAIL ===\nTo: {}\nCC: {}\n===========================================\n".format(to, cc) + replace(row,body) 
+            to = str([x.strip() for x in
+                      row[headers.index('email')].split(',')])
+            cc = str([x.strip() for x in
+                      row[headers.index('email_cc')].split(',')])
+            payload['body'] = '''
+            === ORIGINAL RECIPIENTS: WON'T SHOW IN ACTUAL EMAIL ===\nTo:
+            {}\nCC: {}\n===========================================\n
+            '''.format(to, cc) + replace(row,body) 
             payload['to'] = [redirect]
             payload['cc'] = []
         out.append(payload) 
@@ -82,4 +89,4 @@ def parse(path, csv_filename, email_filename, redirect=None):
 
 if __name__ == "__main__":
     import sys
-    print(parse(sys.argv[1], sys.argv[2]))
+    print(parse(sys.argv[1], sys.argv[2], sys.argv[3]))
