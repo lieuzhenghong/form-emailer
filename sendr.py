@@ -70,7 +70,7 @@ def send(msgs):
 # Set
 def main(path, email, password, data, text,
          preview=True, redirect=None, i=None, ie=None, bcc=None):
-    global SESSION, EMAIL, PATH
+    global SESSION, EMAIL, PATH, BCC
     SESSION = smtplib.SMTP('smtp.office365.com', 587)
     EMAIL = email
     BCC = bcc
@@ -115,8 +115,8 @@ def main(path, email, password, data, text,
             except FileNotFoundError as error:
                 SESSION.quit()
                 raise Exception(str(error))
-                logs.append([msg.items(), str(msg.get_body())])
-                msgs.append(msg)
+            logs.append([msg.items(), str(msg.get_body())])
+            msgs.append(msg)
             if (preview in [True, "True"]):  # handle string passed via CLI
                 SESSION.quit()
                 print(logs)
@@ -203,12 +203,12 @@ Read README.md for more information.
                            not specified. See --idx-start.',
                            default=None,
                            type=int)
-    argparser.add_argument('bcc', 'bcc',
+    argparser.add_argument('-bcc', '--bcc',
                            nargs='?',
-                           help='Takes a comma-separated list of email
+                           help='Takes a comma-separated list of email\
                            addresses to BCC to', 
                            default=None,
-                           type=int)
+                           )
     args = argparser.parse_args()
     print(args)
     (main(args.path, args.email, args.password, args.data,
