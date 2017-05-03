@@ -9,6 +9,7 @@ import sys
 
 SESSION = ''
 EMAIL = ''  # purely for generate function
+BCC = '' # purely for generate function
 PATH = ''
 
 
@@ -36,6 +37,7 @@ def generate(mail):
     msg['From'] = EMAIL
     msg['To'] = ", ".join(x for x in mail['to'])
     msg['CC'] = ", ".join(x for x in mail['cc'])
+    msg['BCC'] = BCC
 
     files = mail['attachments']
     for filename in files:
@@ -67,10 +69,11 @@ def send(msgs):
 # The main function responsible for doing everything
 # Set
 def main(path, email, password, data, text,
-         preview=True, redirect=None, i=None, ie=None):
+         preview=True, redirect=None, i=None, ie=None, bcc=None):
     global SESSION, EMAIL, PATH
     SESSION = smtplib.SMTP('smtp.office365.com', 587)
     EMAIL = email
+    BCC = bcc
     PATH = (path if (path[-1] == '/' ) else (path + '/')) 
     #
     connected = connect(email, password)
@@ -107,8 +110,8 @@ def main(path, email, password, data, text,
         elif (ie is None): 
         # Here, i is not None, ie is None, so we send the i'th mail 
         # Changed it to be one-indexed
-        try:
-                msg = generate(mail[i-1])
+            try:
+                msg = generate(mails[i-1])
             except FileNotFoundError as error:
                 SESSION.quit()
                 raise Exception(str(error))
@@ -123,19 +126,17 @@ def main(path, email, password, data, text,
         # sends mail from i to ie, inclusively
         # so i = 1 i = 3 will get you the 1st to 3rd emails
         else:
-            for mail in mails[i-1:ie]:
+            for mail in mails[(i-1):ie]:
                 try:
                     msg = generate(mail)
                 except FileNotFoundError as error:
                     SESSION.quit()
                     raise Exception(str(error))
-                if (preview in [True, "True"]):  # handle string passed via CLI
-                    SESSION.quit()
+                if (preview in [True, "True"]):  # handle string passed via CLj
                     print([msg.items(), str(msg.get_body())])
-                    return 0
                 else:
                     send(msg)
-                    SESSION.quit()
+            SESSION.quit()
 
 if __name__ == "__main__":
     argparser = argparse.ArgumentParser(description='''
@@ -202,6 +203,13 @@ Read README.md for more information.
                            not specified. See --idx-start.',
                            default=None,
                            type=int)
+    argparser.add_argument('bcc', 'bcc',
+                           nargs='?',
+                           help='Takes a comma-separated list of email
+                           addresses to BCC to', 
+                           default=None,
+                           type=int)
     args = argparser.parse_args()
+    print(args)
     (main(args.path, args.email, args.password, args.data,
-          args.text, not(args.no_preview), args.redirect, args.idx-start, args.idx-end))
+          args.text, not(args.no_preview), args.redirect, args.idx_start, args.idx_end, args.bcc))
