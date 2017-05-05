@@ -1,17 +1,15 @@
 SUBJECT: 6-month extension for iGlobe Platinum Fund II Final Closing Date
 
+`address1`
+`address2`
+
 Dear `title`,
 
-Greetings and trust this email finds you well!
+You are the `amount2`th customer and thus you win `amount1`. Congratulations!
 
-We would like to update you that as at to-date, Platinum Fund II fund size is US$xxxm.  As you may know, we are still in the mode of fund raising.
+I'd like to take this opportunity to remind you that line breaks within the Vim
+text editor are not allowed as they will be parsed as a new line.
 
-We are receiving strong interest from potential new investors in the Fund and they require additional time for due diligence. As the original final closing date of the Fund is 3rd May, 2017, the Board of Directors of the Fund has decided to recommend to you, as the Fund investors, to extend the Fund Final Closing date by another six (6) months to 3rd November 2017.
+Sincerely,
+Gu Wangfan
 
-Please find the enclosed letter and if you agree with the above Fund Final Closing Extension, please sign the consent form attached and send it to PlatinumII@iglobepartners.com, for the attention of Joyce Ng and Kim Liu.
-
-We appreciate your support and look forward to more collaboration with you.
-
-Best regards,
-
-SooBoon on behalf of iGlobe Management Team

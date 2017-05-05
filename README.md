@@ -23,7 +23,8 @@ Feel free to add additional fields but this is the minimum.
 
 Your `email.txt` should look something like this: ![email.txt](img/email.txt.png)
 
-Anything surrounded by backticks (the "~" key on your keyboard) will be **replaced** by the corresponding column in `data.csv`! For example,
+Anything surrounded by backticks (the "~" key on your keyboard) will be
+**replaced** by the corresponding column in `data.csv`! For example,
 
 ![title in email getting replaced](img/email_replace.png)
 
