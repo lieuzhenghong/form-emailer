@@ -1,4 +1,4 @@
-import sendr
+jmport sendr
 from appJar import gui
 from tkinter.filedialog import askdirectory
 

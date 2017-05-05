@@ -13,8 +13,8 @@ BCC = ''        # global variable generate function
 PATH = ''
 
 
-# Connects to the office365 SMTP server 
-# 
+# Connects to the office365 SMTP server
+#
 def connect(email, password):
     global SESSION
     SESSION.ehlo()
@@ -45,20 +45,20 @@ def generate(mail):
         if filename == (''):
             pass
         else:
-            path ='{}attachments/{}'.format(PATH, filename)
+            path = '{}attachments/{}'.format(PATH, filename)
 
             # "Magic method" that is able to guess the attachment's filetype
             ctype, encoding = mimetypes.guess_type(path)
             if ctype is None or encoding is not None:
-                # No guess could be made, or the file is encoded (compressed), so
-                # use a generic bag-of-bits type.
+                # No guess could be made, or the file is encoded (compressed),
+                # so use a generic bag-of-bits type.
                 ctype = 'application/octet-stream'
             maintype, subtype = ctype.split('/', 1)
             with open(path, 'rb') as fp:
                 msg.add_attachment(fp.read(),
-                                maintype=maintype,
-                                subtype=subtype,
-                                filename=filename)
+                                   maintype=maintype,
+                                   subtype=subtype,
+                                   filename=filename)
     return(msg)
 
 
@@ -79,7 +79,7 @@ def main(path, email, password, data, text,
     SESSION = smtplib.SMTP('smtp.office365.com', 587)
     EMAIL = email
     BCC = bcc
-    PATH = (path if (path[-1] == '/' ) else (path + '/')) 
+    PATH = (path if (path[-1] == '/') else (path + '/'))
     #
     connected = connect(email, password)
     if (connected is not True):
@@ -101,17 +101,17 @@ def main(path, email, password, data, text,
         # if only --index-start is specified, send just one mail
         elif (ie is None):
             # Notice we force it to be a list as there's only one element here
-            ms = [mails[i-1]] 
+            ms = [mails[i - 1]]
         # index-end specified but index-start not specified
         # we thus send all mails to index-end (inclusive)
         elif (i is None):
             ms = mails[:ie]
         elif (i == ie):
-            ms = [mails[i-1]]
+            ms = [mails[i - 1]]
         # otherwise, --index-start and --index-end are both specified. send
         # range, inclusive.
         else:
-            ms = mails[(i-1):ie]
+            ms = mails[(i - 1):ie]
 
         for mail in ms:
             try:
@@ -127,6 +127,7 @@ def main(path, email, password, data, text,
         else:
             send(msgs)
         SESSION.quit()
+
 
 if __name__ == "__main__":
     argparser = argparse.ArgumentParser(description='''
@@ -147,12 +148,11 @@ The mandatory columns are:
 | `attachment_name`
 
 The CSV may contain optional columns used for the purpose of doing
-search-and-replace operations on the email text. 
+search-and-replace operations on the email text.
 
 Read README.md for more information.
 ''',
-    formatter_class=RawDescriptionHelpFormatter
-                                        )
+    formatter_class=RawDescriptionHelpFormatter)
     argparser.add_argument('path', help='The main folder. Make sure there\
                            exists a data.csv, email.txt and attachments/\
                            folder.')
@@ -196,10 +196,11 @@ Read README.md for more information.
     argparser.add_argument('-bcc', '--bcc',
                            nargs='?',
                            help='Takes a comma-separated list of email\
-                           addresses to BCC to', 
+                           addresses to BCC to',
                            default=None,
                            )
     args = argparser.parse_args()
     print(args)
     (main(args.path, args.email, args.password, args.data,
-          args.text, not(args.no_preview), args.redirect, args.idx_start, args.idx_end, args.bcc))
+          args.text, not(args.no_preview), args.redirect,
+          args.idx_start, args.idx_end, args.bcc))
