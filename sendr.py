@@ -41,20 +41,24 @@ def generate(mail):
 
     files = mail['attachments']
     for filename in files:
-        path ='{}attachments/{}'.format(PATH, filename)
+        filename = filename.strip(' ')
+        if filename == (''):
+            pass
+        else:
+            path ='{}attachments/{}'.format(PATH, filename)
 
-        # "Magic method" that is able to guess the attachment's filetype
-        ctype, encoding = mimetypes.guess_type(path)
-        if ctype is None or encoding is not None:
-            # No guess could be made, or the file is encoded (compressed), so
-            # use a generic bag-of-bits type.
-            ctype = 'application/octet-stream'
-        maintype, subtype = ctype.split('/', 1)
-        with open(path, 'rb') as fp:
-            msg.add_attachment(fp.read(),
-                               maintype=maintype,
-                               subtype=subtype,
-                               filename=filename)
+            # "Magic method" that is able to guess the attachment's filetype
+            ctype, encoding = mimetypes.guess_type(path)
+            if ctype is None or encoding is not None:
+                # No guess could be made, or the file is encoded (compressed), so
+                # use a generic bag-of-bits type.
+                ctype = 'application/octet-stream'
+            maintype, subtype = ctype.split('/', 1)
+            with open(path, 'rb') as fp:
+                msg.add_attachment(fp.read(),
+                                maintype=maintype,
+                                subtype=subtype,
+                                filename=filename)
     return(msg)
 
 
