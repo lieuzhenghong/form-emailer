@@ -8,8 +8,8 @@ import sys
 
 
 SESSION = ''
-EMAIL = ''  # purely for generate function
-BCC = '' # purely for generate function
+EMAIL = ''      # global variable for generate function
+BCC = ''        # global variable generate function
 PATH = ''
 
 
@@ -74,6 +74,7 @@ def send(msgs):
 # Set
 def main(path, email, password, data, text,
          preview=True, redirect=None, i=None, ie=None, bcc=None):
+    # Get and set global variables to be accessed by generate() and send()
     global SESSION, EMAIL, PATH, BCC
     SESSION = smtplib.SMTP('smtp.office365.com', 587)
     EMAIL = email
@@ -95,52 +96,37 @@ def main(path, email, password, data, text,
         msgs = []
         logs = []
         # If no start index is specified, we send all the emails
-        if (i is None):
-            for mail in mails:
-                try:
-                    msg = generate(mail)
-                except FileNotFoundError as error:
-                    SESSION.quit()
-                    raise Exception(str(error))
-                logs.append([msg.items(), str(msg.get_body())])
-                msgs.append(msg)
-            # if preview flag is True (default), don't send, just print
-            if (preview in [True, "True"]):  # handle "True" passed in via CLI
-                SESSION.quit()
-                print(logs)
-            else:
-                send(msgs)
-                SESSION.quit()
-        elif (ie is None): 
-        # Here, i is not None, ie is None, so we send the i'th mail 
-        # Changed it to be one-indexed
+        if (i is None and ie is None):
+            ms = mails
+        # if only --index-start is specified, send just one mail
+        elif (ie is None):
+            # Notice we force it to be a list as there's only one element here
+            ms = [mails[i-1]] 
+        # index-end specified but index-start not specified
+        # we thus send all mails to index-end (inclusive)
+        elif (i is None):
+            ms = mails[:ie]
+        elif (i == ie):
+            ms = [mails[i-1]]
+        # otherwise, --index-start and --index-end are both specified. send
+        # range, inclusive.
+        else:
+            ms = mails[(i-1):ie]
+
+        for mail in ms:
             try:
-                msg = generate(mails[i-1])
+                msg = generate(mail)
             except FileNotFoundError as error:
                 SESSION.quit()
                 raise Exception(str(error))
             logs.append([msg.items(), str(msg.get_body())])
             msgs.append(msg)
-            if (preview in [True, "True"]):  # handle string passed via CLI
-                SESSION.quit()
-                print(logs)
-            else:
-                send(msgs)
-                SESSION.quit()
-        # sends mail from i to ie, inclusively
-        # so i = 1 i = 3 will get you the 1st to 3rd emails
+        # if preview flag is True (default), don't send, just print
+        if (preview in [True, "True"]):  # handle "True" passed in via CLI
+            print(logs)
         else:
-            for mail in mails[(i-1):ie]:
-                try:
-                    msg = generate(mail)
-                except FileNotFoundError as error:
-                    SESSION.quit()
-                    raise Exception(str(error))
-                if (preview in [True, "True"]):  # handle string passed via CLj
-                    print([msg.items(), str(msg.get_body())])
-                else:
-                    send(msg)
-            SESSION.quit()
+            send(msgs)
+        SESSION.quit()
 
 if __name__ == "__main__":
     argparser = argparse.ArgumentParser(description='''
