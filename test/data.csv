@@ -1,4 +1,5 @@
-name,amount1,amount2,address1,address2,address3,title,email,email_cc,attachment_name
-Lieu Zheng Hong,20000,1,who cares,i dont,dgaf,Zheng Hong,research@iglobepartners.com,intern@iglobepartners.com,"test img.png, test.pdf"
-Leong Xuan Li,1948000,2,"Room 2301, 23/F., Fortis Tower,","77-79 Gloucester Road, ","Wanchai, Hong Kong",Richard,research@iglobepartners.com,intern@iglobepartners.com,test img.png
-Poodle McPoodleface,150000,3,"10C Braddell Hill,","#11-11,",Singapore 579722 ,Mun Kein,intern@iglobepartners.com,research@iglobepartners.com,
+name,amount1,amount2,address1,address2,address3,title,to,cc,attachments,bcc
+Lieu Zheng Hong,20000,1,"Block 144, Petir Road",#01-242,Singapore 670144,Zheng Hong,research@iglobepartners.com,intern@iglobepartners.com,"test img.png, test.pdf",research@iglobepartners.com
+Leong Xuan Li,1948000,2,"Room 2301, 23/F., Fortis Tower,",#01-241,"Wanchai, Hong Kong",Richard,research@iglobepartners.com,intern@iglobepartners.com,test img.png,
+Poodle McPoodleface,150000,3,"10C Braddell Hill,",#01-240,Singapore 579722 ,Mun Kein,intern@iglobepartners.com,research@iglobepartners.com,,research@iglobepartners.com
+Robert Chew,100,4,East Coast Park,#01-239,Something else,Robert,chrobertew@gmail.com,research@iglobepartners.com,test img.png,

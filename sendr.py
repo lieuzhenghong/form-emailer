@@ -30,14 +30,19 @@ def connect(email, password):
 # It takes in a mail object which is an object created by
 # parser.py, parser.parse
 def generate(mail):
+    print(mail)
     msg = EmailMessage()
     # Grab all the data from the mail object
     msg.set_content(mail['body'])
     msg['Subject'] = mail['subject']
     msg['From'] = EMAIL
     msg['To'] = ", ".join(x for x in mail['to'])
-    msg['CC'] = ", ".join(x for x in mail['cc'])
-    msg['BCC'] = BCC
+    if 'cc' in mail:
+        msg['CC'] = ", ".join(x for x in mail['cc'])
+    if 'bcc' in mail:
+        msg['BCC'] = ", ".join(x for x in mail['bcc'])
+    else:
+        msg['BCC'] = BCC
 
     files = mail['attachments']
     for filename in files:
@@ -64,10 +69,12 @@ def generate(mail):
 
 def send(msgs):
     if isinstance(msgs, list):
-        for msg in msgs:
+        for idx, msg in enumerate(msgs):
             SESSION.send_message(msg)
+            print("Messsage {} of {} successfully sent.".format(idx+1, len(msgs)))
     else:
         SESSION.send_message(msgs)
+        print("Message successfully sent.")
 
 
 # The main function responsible for doing everything
