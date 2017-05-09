@@ -79,8 +79,7 @@ def parse(path, csv_filename, email_filename, redirect=None):
                              row[headers.index('cc')].split(',')]
         if 'bcc' in headers:
             payload['bcc'] = [x.strip() for x in
-                              row[headers.index('bcc')].split(',')]
-
+                              row[headers.index('bcc')].split(',')] 
         if (redirect is not None):
             payload['body'] = '''
             === ORIGINAL RECIPIENTS: WON'T SHOW IN ACTUAL EMAIL ===\nTo:

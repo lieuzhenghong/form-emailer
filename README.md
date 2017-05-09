@@ -70,6 +70,15 @@ live in.
 ### password
 **(REQUIRED)** Your password.
 
+### smtp_url
+The SMTP url. Defaults to outlook.office.com as this program was originally
+written for iGlobe Office which uses Office365 Outlook.
+If you're using other email providers, you'll have to change this. Gmail's one
+for example is `smtp.google.com.`
+
+### smtp_port
+The SMTP port. Defaults to 587; same reason.
+
 ### data
 Your `data.csv` file. Useful if your `data.csv` is not called `data.csv`. If
 not specified, default is `data.csv`.
@@ -108,9 +117,6 @@ not selected and the emails are not sent, only previewed.
 Not really important, but you can redirect messages to your email to preview
 them before you send them—useful for checking formatting. Use `--redirect <your
 email> --no-preview` to send emails to a target email address.
-
-### bcc
-Use `--bcc <your_email>` to BCC someone. You can also do this in `data.csv`.
 
 ## Limitations
 Outlook limits the number of emails you can send at 30/minute. Hence if you try

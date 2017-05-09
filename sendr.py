@@ -10,7 +10,6 @@ import pprint
 
 SESSION = ''
 EMAIL = ''      # global variable for generate function
-BCC = ''        # global variable generate function
 PATH = ''
 
 
@@ -42,8 +41,6 @@ def generate(mail):
         msg['CC'] = ", ".join(x for x in mail['cc'])
     if 'bcc' in mail:
         msg['BCC'] = ", ".join(x for x in mail['bcc'])
-    else:
-        msg['BCC'] = BCC
 
     files = mail['attachments']
     for filename in files:
@@ -82,12 +79,11 @@ def send(msgs):
 # Set
 def main(path, email, password,
          smtp_url, smtp_port, data, text,
-         preview=True, redirect=None, i=None, ie=None, bcc=None):
+         preview=True, redirect=None, i=None, ie=None):
     # Get and set global variables to be accessed by generate() and send()
-    global SESSION, EMAIL, PATH, BCC
+    global SESSION, EMAIL, PATH 
     SESSION = smtplib.SMTP(smtp_url, smtp_port)
     EMAIL = email
-    BCC = bcc
     PATH = (path if (path[-1] == '/') else (path + '/'))
     #
     connected = connect(email, password)
@@ -213,15 +209,9 @@ Read README.md for more information.
                            not specified. See --idx-start.',
                            default=None,
                            type=int)
-    argparser.add_argument('-bcc', '--bcc',
-                           nargs='?',
-                           help='Takes a comma-separated list of email\
-                           addresses to BCC to',
-                           default=None,
-                           )
     args = argparser.parse_args()
     print(args)
     (main(args.path, args.email, args.password, args.smtp_url,
           args.smtp_port, args.data,
           args.text, not(args.no_preview), args.redirect,
-          args.idx_start, args.idx_end, args.bcc))
+          args.idx_start, args.idx_end))
