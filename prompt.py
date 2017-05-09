@@ -32,15 +32,24 @@ if idx_end.strip(' ') == '':
 else:
     idx_end = int(idx_end.strip(' '))
 
-sendr.main(path,
-           email,
-           password,
-           smtp_url,
-           int(smtp_port),
-           'data.csv',
-           'email.txt',
-           not(no_preview), 
-           None,
-           idx_start,
-           idx_end
-           )
+try:
+    sendr.main(path,
+               email,
+               password,
+               smtp_url,
+               int(smtp_port),
+               'data.csv',
+               'email.txt',
+               not(no_preview), 
+               None,
+               idx_start,
+               idx_end
+               )
+except:
+    import sys
+    print(sys.exc_info()[0])
+    import traceback
+    print(traceback.format_exc())
+finally:
+    print("Press Enter to exit.")
+    input()

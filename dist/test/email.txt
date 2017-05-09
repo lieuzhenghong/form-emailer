@@ -1,0 +1,15 @@
+SUBJECT: 6-month extension for iGlobe Platinum Fund II Final Closing Date
+
+`address1`
+`address2`
+
+Dear `title`,
+
+You are the `amount2`th customer and thus you win `amount1`. Congratulations!
+
+I'd like to take this opportunity to remind you that line breaks within the Vim
+text editor are not allowed as they will be parsed as a new line.
+
+Sincerely,
+Gu Wangfan
+
