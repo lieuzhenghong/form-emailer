@@ -5,6 +5,7 @@ import parser
 import argparse
 from argparse import RawDescriptionHelpFormatter
 import sys
+import pprint
 
 
 SESSION = ''
@@ -30,7 +31,7 @@ def connect(email, password):
 # It takes in a mail object which is an object created by
 # parser.py, parser.parse
 def generate(mail):
-    print(mail)
+    #pprint.pprint(mail)
     msg = EmailMessage()
     # Grab all the data from the mail object
     msg.set_content(mail['body'])
@@ -79,11 +80,12 @@ def send(msgs):
 
 # The main function responsible for doing everything
 # Set
-def main(path, email, password, data, text,
+def main(path, email, password,
+         smtp_url, smtp_port, data, text,
          preview=True, redirect=None, i=None, ie=None, bcc=None):
     # Get and set global variables to be accessed by generate() and send()
     global SESSION, EMAIL, PATH, BCC
-    SESSION = smtplib.SMTP('smtp.office365.com', 587)
+    SESSION = smtplib.SMTP(smtp_url, smtp_port)
     EMAIL = email
     BCC = bcc
     PATH = (path if (path[-1] == '/') else (path + '/'))
@@ -130,7 +132,7 @@ def main(path, email, password, data, text,
             msgs.append(msg)
         # if preview flag is True (default), don't send, just print
         if (preview in [True, "True"]):  # handle "True" passed in via CLI
-            print(logs)
+            pprint.pprint(logs)
         else:
             send(msgs)
         SESSION.quit()
@@ -165,6 +167,17 @@ Read README.md for more information.
                            folder.')
     argparser.add_argument('email', help='Login email')
     argparser.add_argument('password', help='Login password')
+    argparser.add_argument('smtp_url', 
+                           help='SMTP url. Defaults to outlook.office.com',
+                           nargs='?',
+                           default='outlook.office.com'
+                            )
+    argparser.add_argument('smtp_port',
+                            help='SMTP port. Defaults to 587',
+                            nargs='?',
+                            default=587,
+                            type=int
+                            )
     argparser.add_argument('data',
                            nargs='?',
                            help='Your data file (.csv)',
@@ -208,6 +221,7 @@ Read README.md for more information.
                            )
     args = argparser.parse_args()
     print(args)
-    (main(args.path, args.email, args.password, args.data,
+    (main(args.path, args.email, args.password, args.smtp_url,
+          args.smtp_port, args.data,
           args.text, not(args.no_preview), args.redirect,
           args.idx_start, args.idx_end, args.bcc))
