@@ -1,7 +1,7 @@
 import smtplib
 from email.message import EmailMessage
 import mimetypes
-import parser
+import email_parser
 import argparse
 from argparse import RawDescriptionHelpFormatter
 import sys
