@@ -95,7 +95,7 @@ def main(path, email, password,
         # Try parsing the mails, if it fails it means there was some problem
         # with the input data
         try:
-            mails = parser.parse(PATH, data, text, redirect)
+            mails = email_parser.parse(PATH, data, text, redirect)
         except Exception as error:
             raise Exception(str(error))
         msgs = []
