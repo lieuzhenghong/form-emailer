@@ -166,7 +166,7 @@ Read README.md for more information.
     argparser.add_argument('smtp_url', 
                            help='SMTP url. Defaults to outlook.office.com',
                            nargs='?',
-                           default='outlook.office.com'
+                           default='outlook.office365.com'
                             )
     argparser.add_argument('smtp_port',
                             help='SMTP port. Defaults to 587',

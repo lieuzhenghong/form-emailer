@@ -1,9 +1,9 @@
 import getpass
 import sendr
 
-smtp_url = input('SMTP server URL (defaults to outlook.office.com): ')
+smtp_url = input('SMTP server URL (defaults to outlook.office365.com): ')
 smtp_port = input('SMTP server port (defaults to 587): ')
-email = input('Email address: ')
+email = input('Email address to send emails from: ')
 password = getpass.getpass('Password: ')
 path = input('Location of folder: ')
 idx_start = input('Start index (if any?): ')
@@ -17,7 +17,7 @@ else:
     no_preview = False
 
 if smtp_url.strip(' ') == '':
-    smtp_url = 'outlook.office.com'
+    smtp_url = 'outlook.office365.com'
 
 if smtp_port.strip(' ') == '':
     smtp_port = 587
