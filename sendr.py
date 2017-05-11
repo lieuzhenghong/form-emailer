@@ -69,10 +69,10 @@ def send(msgs):
     if isinstance(msgs, list):
         for idx, msg in enumerate(msgs):
             SESSION.send_message(msg)
-            print("Messsage {} of {} successfully sent.".format(idx+1, len(msgs)))
+            print("Messsage {} of {} successfully sent to {}".format(idx+1, len(msgs), msgs[idx]['To']))
     else:
         SESSION.send_message(msgs)
-        print("Message successfully sent.")
+        print("Message successfully sent to {}.".format(msgs[idx]['To']))
 
 
 # The main function responsible for doing everything
@@ -129,6 +129,19 @@ def main(path, email, password,
         # if preview flag is True (default), don't send, just print
         if (preview in [True, "True"]):  # handle "True" passed in via CLI
             pprint.pprint(logs)
+            while True:
+                to_send = input('All OK? Send the mails now (y), preview a specific message (type the number), or quit (q): ').strip(' ')
+                if to_send.isdigit():
+                    try:
+                        pprint.pprint(logs[int(to_send)-1])
+                    except IndexError:
+                        print('Index not found. Try another number.')
+                elif to_send == 'y' or to_send == 'Yes' or to_send == 'Y' or to_send == 'yes':
+                    send(msgs)
+                    break
+                elif to_send == 'q' or to_send == 'Q':
+                    break
+                print(to_send)
         else:
             send(msgs)
         SESSION.quit()
