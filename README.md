@@ -77,6 +77,29 @@ Sincerely,
 iGlobe Partners
 ```
 
+This will become:
+
+```
+Email 1 of 2:
+
+Dear Jack,
+
+Thanks for being our loyal customer and for giving us 500 dollars.
+
+Sincerely,
+iGlobe Partners
+
+
+Email 2 of 2:
+
+Dear CKY,
+
+Thanks for being our loyal customer and for giving us 300 dollars.
+
+Sincerely,
+iGlobe Partners
+```
+
 ## How to use the software
 
 ```
